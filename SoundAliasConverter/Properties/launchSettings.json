@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SoundAliasConverter": {
+      "commandName": "Project",
+      "commandLineArgs": "\"F:\\iw4x_full_game\\zonetool\\mp_hardhat\\sounds\\barrel_mtl_explode.xss\""
+    }
+  }
+}
