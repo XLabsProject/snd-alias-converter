@@ -13,7 +13,7 @@ namespace SoundAliasConverter
         public float envelopMax;
         public float envelopMin;
         public float envelopPercentage;
-        public int flags;
+        public uint flags;
         public float lfePercentage;
         public string mixerGroup;
         public float pitchMax;
@@ -24,7 +24,7 @@ namespace SoundAliasConverter
         public float slavePercentage;
         public string soundFile;
         public SpeakerMap speakerMap;
-        public float startDelay;
+        public int startDelay;
         public string subtitle;
         public int type;
         public float volMax;

@@ -23,23 +23,31 @@ namespace SoundAliasConverter
                 Console.WriteLine($"Working on {arg}");
                 if (File.Exists(arg))
                 {
-                    string dataToWrite = string.Empty;
+                    byte[] dataToWrite;
 
                     try
                     {
+                        var outputFilename = Path.Combine(Path.GetDirectoryName(arg), Path.GetFileNameWithoutExtension(arg));
                         switch (Path.GetExtension(arg).ToUpper())
                         {
                             case ".XSS":
-                                dataToWrite = Newtonsoft.Json.JsonConvert.SerializeObject(XSSReader.Read(arg), Newtonsoft.Json.Formatting.Indented);
+                                dataToWrite = System.Text.Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(XSSReader.Read(arg), Newtonsoft.Json.Formatting.Indented));
+                                outputFilename = Path.GetFileNameWithoutExtension(arg); // REMOVE
+                                outputFilename += ".json";
                                 break;
 
+                            case "":
                             case ".JSON":
-                                dataToWrite = XSSWriter.Write(Newtonsoft.Json.JsonConvert.DeserializeObject<snd_alias_list_t>(File.ReadAllText(arg)));
+                                var aliases = Newtonsoft.Json.JsonConvert.DeserializeObject<snd_alias_list_t>(File.ReadAllText(arg));
+                                dataToWrite = XSSWriter.Write(aliases);
+                                outputFilename += ".xss";
                                 break;
+
+                            default:
+                                throw new Exception($"Unsupported format/extension: {Path.GetExtension(arg)}");
                         }
 
-                        var outputFilename = Path.GetFileNameWithoutExtension(arg) + ".JSON";
-                        File.WriteAllText(outputFilename, dataToWrite);
+                        File.WriteAllBytes(outputFilename, dataToWrite);
                         Console.WriteLine($"Done - wrote {outputFilename}");
 
                     }

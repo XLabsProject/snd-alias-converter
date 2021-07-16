@@ -1,28 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-
-namespace SoundAliasConverter
+﻿namespace SoundAliasConverter
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Runtime.InteropServices;
+    using static XSSFormat;
+
     public static class XSSReader
     {
-        private enum DumpType
-        {
-            DUMP_TYPE_INT = 0,
-            DUMP_TYPE_STRING = 1,
-            DUMP_TYPE_ASSET = 2,
-            DUMP_TYPE_ARRAY = 3,
-            DUMP_TYPE_OFFSET = 4,
-            DUMP_TYPE_FLOAT = 5,
-            DUMP_TYPE_RAW = 6
-        }
-
-        private const int DUMP_NON_EXISTING = 0;
-        private const int DUMP_EXISTING = 1;
 
         static List<object> objectTable = new List<object>();
 
@@ -94,9 +82,9 @@ namespace SoundAliasConverter
 
                         if (cAlias.soundFile != 0)
                         {
-                            DumpType dataType = (DumpType)br.ReadByte();
+                            EDumpType dataType = (EDumpType)br.ReadByte();
 
-                            if (dataType == DumpType.DUMP_TYPE_ARRAY)
+                            if (dataType == EDumpType.DUMP_TYPE_ARRAY)
                             {
                                 uint soundFileCount = br.ReadUInt32();
                                 // Should always be 1 anyway
@@ -151,18 +139,6 @@ namespace SoundAliasConverter
             return aliasList;
         }
 
-        private static string ReadCString(BinaryReader br)
-        {
-            StringBuilder sb = new StringBuilder();
-            char c;
-            while ((c = (char)br.ReadByte()) != 0)
-            {
-                sb.Append(c);
-            }
-
-            return sb.Length == 0 ? null : sb.ToString();
-        }
-
         private static T GetUniqueObject<T>(int index)
         {
             if (index < 0 || index >= objectTable.Count)
@@ -182,9 +158,9 @@ namespace SoundAliasConverter
 
         private static T[] ReadUniqueArray<T>(BinaryReader br)
         {
-            var dumpType = (DumpType)br.ReadByte();
+            var dumpType = (EDumpType)br.ReadByte();
 
-            if (dumpType == DumpType.DUMP_TYPE_ARRAY)
+            if (dumpType == EDumpType.DUMP_TYPE_ARRAY)
             {
                 // Actual read
                 int count = br.ReadInt32();
@@ -197,7 +173,7 @@ namespace SoundAliasConverter
                 objectTable.Add(arr);
                 return arr;
             }
-            else if (dumpType == DumpType.DUMP_TYPE_OFFSET)
+            else if (dumpType == EDumpType.DUMP_TYPE_OFFSET)
             {
                 var index = br.ReadInt32();
 
@@ -216,9 +192,9 @@ namespace SoundAliasConverter
         }
         private static string ReadUniqueCString(BinaryReader br)
         {
-            var dumpType = (DumpType)br.ReadByte();
+            var dumpType = (EDumpType)br.ReadByte();
 
-            if (dumpType == DumpType.DUMP_TYPE_STRING || dumpType == DumpType.DUMP_TYPE_ASSET)
+            if (dumpType == EDumpType.DUMP_TYPE_STRING || dumpType == EDumpType.DUMP_TYPE_ASSET)
             {
                 var stringExistence = br.ReadByte();
 
@@ -243,7 +219,7 @@ namespace SoundAliasConverter
                 // NON_EXISTING means nullptr for the game. So i assume use null here? You could also use "" depending on the asset type.
                 return null;
             }
-            else if (dumpType == DumpType.DUMP_TYPE_OFFSET)
+            else if (dumpType == EDumpType.DUMP_TYPE_OFFSET)
             {
                 var index = br.ReadInt32();
 

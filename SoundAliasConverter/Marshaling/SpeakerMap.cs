@@ -14,5 +14,17 @@ namespace SoundAliasConverter.Marshaling
         public ChannelMap channelMap01;
         public ChannelMap channelMap10;
         public ChannelMap channelMap11;
+
+        public static SpeakerMap From(SoundAliasConverter.SpeakerMap map)
+        {
+            var cMap = new SpeakerMap();
+            cMap.isDefault = map.isDefault;
+            cMap.channelMap00 = ChannelMap.From(map.channelMaps[0]);
+            cMap.channelMap01 = ChannelMap.From(map.channelMaps[1]);
+            cMap.channelMap10 = ChannelMap.From(map.channelMaps[2]);
+            cMap.channelMap11 = ChannelMap.From(map.channelMaps[3]);
+
+            return cMap;
+        }
     }
 }
